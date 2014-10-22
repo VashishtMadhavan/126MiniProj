@@ -1,3 +1,6 @@
+###CODE courtesy of https://github.com/davidadamojr/TextRank
+## a few modifications were made for our purposes
+
 import nltk
 import itertools
 from operator import itemgetter
@@ -39,6 +42,7 @@ def uniqueWords(word_list):
 	for element in word_list:
 		seen.add(element)
 	return seen
+
 def extractKeyphrases(text):
     #tokenize the text using nltk
     wordTokens = nltk.word_tokenize(text)
@@ -91,7 +95,6 @@ def extractKeyphrases(text):
         
         i +=1
         j +=1
-    print list(modifiedKeyphrases)
         
     return modifiedKeyphrases
 

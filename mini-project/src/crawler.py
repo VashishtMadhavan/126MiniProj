@@ -31,8 +31,6 @@ def domain(url):
     return hostname
     
 #This function will return all the urls on a page, and return the start url if there is an error or no urls
-#TODO: customize this for the daily cal 
-#TODO: do we always wnat t return to start_url, may mess up invariant distribution
 def parse_links(url, url_start):
     url_list = []
     myopener = MyOpener()
@@ -47,8 +45,8 @@ def parse_links(url, url_start):
         for tag in soup.findAll('a', href=True):
             #concatenate the base url with the path from the hyperlink
             tmp = urlparse.urljoin(url, tag['href'])
-            #we want to stay in the berkeley domain. This becomes more relevant later
-            if domain(tmp).endswith('berkeley.edu'):
+            #we want to stay in the daily cal domain. This becomes more relevant later
+            if domain(tmp).startswith('http://www.dailycal.org'):
                 url_list.append(tmp)
         if len(url_list) == 0:
             return [url_start]
@@ -73,7 +71,6 @@ def pagerank(url_start,num_iterations):
 def textrank(current_url):
     #returns the top keywords in a certain article(keywords are adjusted for article length)
     myopener = MyOpener()
-    #TODO: may need to get just article text
     page = myopener.open(current_url)
     text = page.read().lower()
     page.close()
