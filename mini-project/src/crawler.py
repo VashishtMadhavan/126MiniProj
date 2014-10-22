@@ -1,11 +1,20 @@
-import numpy as np
 from __future__ import division
 import re
+import numpy as np
 import sys
 import urllib
 import urlparse
 import random
 from bs4 import BeautifulSoup
+
+#constant variables
+#set of non-alphanumeric characters
+#run .strip(delchars) to get rid of all the unknown characters in an article
+delchars = ''.join(c for c in map(chr, range(256)) if not c.isalnum())
+#stop words in english read from stopwords.txt
+f=open('stopwords.txt','r')
+stop_words=[line.strip(delchars) for line in f]
+f.close()
 
 
 #http://wolfprojects.altervista.org/articles/change-urllib-user-agent/ 
@@ -21,6 +30,8 @@ def domain(url):
     return hostname
     
 #This function will return all the urls on a page, and return the start url if there is an error or no urls
+#TODO: customize this for the daily cal 
+#TODO: do we always wnat t return to start_url, may mess up invariant distribution
 def parse_links(url, url_start):
     url_list = []
     myopener = MyOpener()
@@ -45,41 +56,56 @@ def parse_links(url, url_start):
         return [url_start]
 
 
- def pagerank(url_start,num_iterations):
- 	## function to find the fraction of time spent in each page
- 	##if num_iterations is high fraction of time spent in each page converges to probability of being on that page
- 	##CODE HERE
- 	return
+#finds invariant distribution of certain set of pages
+def pagerank(url_start,num_iterations):
+    curr=url_start
+    visit_history={}
+    for i in range(num_iterations):
+        if curr not in visit_history.keys():
+            visit_history[curr]=1.0/(num_iterations)
+        else:
+            visit_history[curr]+=1.0/(num_iterations)
+        url_list=parse_links(curr,url_start)
+        curr=random.choice(url_start)
+    return visit_history
 
-##modify this do search daily cal
-url_start = "http://www.eecs.berkeley.edu/Research/Areas/"
-current_url = url_start
-num_of_visits = 3
-#List of professors obtained from the EECS page
-profs = ['Abbeel','Agrawala','Alon','Anantharam','Arcak','Arias','Asanović','Bachrach','Bajcsy','Bodik','Bokor','Boser','Brewer','Canny','Chang-Hasnain','Culler','Darrell','Demmel','Fearing','Fox','Franklin','Garcia','Goldberg','Hartmann','Harvey','Hellerstein','Javey','Joseph','Katz','Keutzer','Liu','Klein','Kubiatowicz','Lee','Lustig','Maharbiz','Malik','Nguyen','Niknejad','Nikolic',"O'Brien",'Parekh','Patterson','Paxson','Pisano','Rabaey','Ramchandran','Roychowdhury','Russell','Sahai','Salahuddin','Sanders','Sangiovanni-Vincentelli','Sastry','Sen','Seshia','Shenker','Song','Song','Spanos','Stoica','Stojanovic','Tomlin','Tygar','Walrand','Wawrzynek','Wu','Yablonovitch','Yelick','Zakhor']
-bad_urls = ['http://bgess.berkeley.edu/%7Ensbejr/index.html','http://superior.berkeley.edu/Berkeley/Buildings/soda.html','http://physicalplant.berkeley.edu/','http://www.eecs.berkeley.edu/Deptonly/Rosters/roster.room.cory.html',' http://www.eecs.berkeley.edu/Resguide/admin.shtml#aliases','http://www.eecs.berkeley.edu/department/EECSbrochure/c1-s3.html']
-# bad urls help take care of some pathologies that ruin our surfing
-# you might have to be smart with try-catches depending on your application
+def textrank(current_url):
+    #run a text rank to find the top 20 keywords in a specific article
+    return 
 
-#Creating a dictionary to keep track of how often we come across a professor
-profdict = {}
-for i in profs:
-    profdict[i] = 0
 
-for i in range(num_of_visits):
-    if random.random() < 0.9: #follow a link!
-        print  i , ' Visiting... ', current_url
-        url_list = parse_links(current_url, url_start)
-        current_url = random.choice(url_list)
-        if current_url in bad_urls or "iris" in current_url or "Deptonly" in current_url: #dealing with more pathologies
+## TODO: modify this do search daily cal
+def analyze_articles(url_start,num_visits):
+    # bad urls help take care of some pathologies that ruin our surfing
+    # you might have to be smart with try-catches depending on your application
+    #TODO: add list of bad urls in our surfing
+
+    #Creating a dictionary to keep track of the importance of terms across articles
+    word_dict = {}
+    current_url = url_start
+
+    for i in range(num_of_visits):
+        if random.random() < 0.9: #follow a link!
+            print  i , ' Visiting... ', current_url
+            url_list = parse_links(current_url, url_start)
+            current_url = random.choice(url_list)
+            #TODO: deal with pathologies
+
+            myopener = MyOpener()
+            page = myopener.open(current_url)
+            text = page.read().lower()
+            page.close()
+            #TODO add textrank computation here
+            
+        else: #click 'home' button!
+            #TODO: may want to change this
             current_url = url_start
-        myopener = MyOpener()
-        page = myopener.open(current_url)
-        text = page.read().lower()
-        page.close()
-        #Figuring out which professor is mentioned on a page.
-        ##Instead of this do a textrank of the words in an article/page
-        for p in profs:
-            profdict[p]+= 1 if " " + p.lower() + " " in text else 0 #can use regex re.findall(i,text), but it's overkill
-    else: #click 'home' button!
-        current_url = url_start
+    word_ranks = [pair for pair in sorted(profdict.items(), key=lambda item: item[1], reverse=True)]
+    return word_ranks
+
+if __name__=="__main__":
+    print stop_words
+
+
+
+
