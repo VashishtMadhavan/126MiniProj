@@ -86,7 +86,9 @@ def textrank(current_url):
     page = myopener.open(current_url)
     text = page.read()
     page.close()
-    soup=BeautifulSoup(text)
+    soup=BeautifulSoup(text, "html5lib")
+    #TODO: get article title and text with bs4
+
     return extractKeyphrases(text)
 
 
@@ -121,6 +123,5 @@ def analyze_articles(url_start,num_visits):
 
 if __name__=="__main__":
     print pagerank("http://www.dailycal.org/2014/10/21/new-details-murder-case/",100)
-    #print domain("javascript:")
 
 
