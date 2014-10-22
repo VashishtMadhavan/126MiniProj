@@ -39,7 +39,7 @@ def parse_links(url, url_start):
         page = myopener.open(url)
         text = page.read()
         page.close()
-        soup = BeautifulSoup(text)
+        soup = BeautifulSoup(text,"html5lib")
 
         #find all hyperlinks using beautiful soup
         for tag in soup.findAll('a', href=True):
@@ -52,7 +52,6 @@ def parse_links(url, url_start):
             #we want to stay in the daily cal domain. This becomes more relevant later
             if domain(tmp).endswith('dailycal.org'):
                 url_list.append(tmp)
-
         if len(url_list) == 0:
             return [url_start]
         return url_list
@@ -114,7 +113,7 @@ def analyze_articles(url_start,num_visits):
     return word_ranks
 
 if __name__=="__main__":
-    print pagerank("http://www.dailycal.org",100)
+    print pagerank("http://www.dailycal.org/2014/10/21/new-details-murder-case/",100)
     #print domain("javascript:")
 
 
