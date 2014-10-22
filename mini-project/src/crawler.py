@@ -6,6 +6,7 @@ import urllib
 import urlparse
 import random
 from bs4 import BeautifulSoup
+from textRank import extractKeyphrases
 
 #constant variables
 #set of non-alphanumeric characters
@@ -70,8 +71,13 @@ def pagerank(url_start,num_iterations):
     return visit_history
 
 def textrank(current_url):
-    #run a text rank to find the top 20 keywords in a specific article
-    return 
+    #returns the top keywords in a certain article(keywords are adjusted for article length)
+    myopener = MyOpener()
+    #TODO: may need to get just article text
+    page = myopener.open(current_url)
+    text = page.read().lower()
+    page.close()
+    return extractKeyphrases(text)
 
 
 ## TODO: modify this do search daily cal
@@ -96,7 +102,7 @@ def analyze_articles(url_start,num_visits):
             text = page.read().lower()
             page.close()
             #TODO add textrank computation here
-            
+
         else: #click 'home' button!
             #TODO: may want to change this
             current_url = url_start
