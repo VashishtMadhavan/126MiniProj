@@ -45,9 +45,14 @@ def parse_links(url, url_start):
         for tag in soup.findAll('a', href=True):
             #concatenate the base url with the path from the hyperlink
             tmp = urlparse.urljoin(url, tag['href'])
+            try:
+                domain(tmp)
+            except:
+                continue
             #we want to stay in the daily cal domain. This becomes more relevant later
-            if domain(tmp).startswith('http://www.dailycal.org'):
+            if domain(tmp).endswith('dailycal.org'):
                 url_list.append(tmp)
+
         if len(url_list) == 0:
             return [url_start]
         return url_list
@@ -60,20 +65,22 @@ def pagerank(url_start,num_iterations):
     curr=url_start
     visit_history={}
     for i in range(num_iterations):
+        print i, "Visiting URL: ", curr
         if curr not in visit_history.keys():
             visit_history[curr]=1.0/(num_iterations)
         else:
             visit_history[curr]+=1.0/(num_iterations)
         url_list=parse_links(curr,url_start)
-        curr=random.choice(url_start)
+        curr=random.choice(url_list)
     return visit_history
 
 def textrank(current_url):
     #returns the top keywords in a certain article(keywords are adjusted for article length)
     myopener = MyOpener()
     page = myopener.open(current_url)
-    text = page.read().lower()
+    text = page.read()
     page.close()
+    soup=BeautifulSoup(text)
     return extractKeyphrases(text)
 
 
@@ -107,8 +114,7 @@ def analyze_articles(url_start,num_visits):
     return word_ranks
 
 if __name__=="__main__":
-    print stop_words
-
-
+    print pagerank("http://www.dailycal.org",100)
+    #print domain("javascript:")
 
 
