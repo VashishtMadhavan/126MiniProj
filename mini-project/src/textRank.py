@@ -81,7 +81,7 @@ def extractKeyphrases(text):
         secondWord = textlist[j]
         if firstWord in keyphrases and secondWord in keyphrases:
             keyphrase = firstWord + ' ' + secondWord
-            modifiedKeyphrases.add((keyphrase,calculated_page_rank.get(firstWord) + calculated_page_rank(secondWord)))
+            modifiedKeyphrases.add((keyphrase,calculated_page_rank.get(firstWord) + calculated_page_rank.get(secondWord)))
             dealtWith.add(firstWord)
             dealtWith.add(secondWord)
         else:

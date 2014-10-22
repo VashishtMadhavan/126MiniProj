@@ -29,7 +29,25 @@ def domain(url):
     hostname = urlparse.urlparse(url).hostname.split(".")
     hostname = ".".join(len(hostname[-2]) < 4 and hostname[-3:] or hostname[-2:])
     return hostname
-    
+
+def cleanText(list_tags):
+    for tag in list_tags:
+        if tag.has_attr('id'):
+            list_tags.remove(tag)
+    text=' '.join(t.get_text() for t in list_tags)
+    return text
+
+
+def getArticleText(article_url):
+    myopener = MyOpener()
+    page = myopener.open(article_url)
+    text = page.read()
+    page.close()
+    soup=BeautifulSoup(text, "html5lib")
+    articleTitle=soup.find_all('h2','entry-title')[0].get_text()
+    articleContent= cleanText(soup.find_all('div','entry-content')[0].find_all('p'))
+    return articleTitle + " "+articleContent
+
 #This function will return all the urls on a page, and return the start url if there is an error or no urls
 def parse_links(url, url_start):
     url_list = []
@@ -82,13 +100,7 @@ def pagerank(url_start,num_iterations):
 
 def textrank(current_url):
     #returns the top keywords in a certain article(keywords are adjusted for article length)
-    myopener = MyOpener()
-    page = myopener.open(current_url)
-    text = page.read()
-    page.close()
-    soup=BeautifulSoup(text, "html5lib")
-    #TODO: get article title and text with bs4
-
+    text= getArticleText(current_url)
     return extractKeyphrases(text)
 
 
@@ -122,6 +134,6 @@ def analyze_articles(url_start,num_visits):
     return word_ranks
 
 if __name__=="__main__":
-    print pagerank("http://www.dailycal.org/2014/10/21/new-details-murder-case/",100)
-
+    #print pagerank("http://www.dailycal.org/2014/10/21/new-details-murder-case/",100)
+    print textrank("http://www.dailycal.org/2014/10/21/new-details-murder-case/")
 
