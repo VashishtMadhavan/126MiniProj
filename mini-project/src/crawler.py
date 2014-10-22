@@ -40,6 +40,8 @@ def parse_links(url, url_start):
         text = page.read()
         page.close()
         soup = BeautifulSoup(text,"html5lib")
+        #anytime dailycal throws a bad url, add some info about the url in this
+        bad_urls=['email-protection']
 
         #find all hyperlinks using beautiful soup
         for tag in soup.findAll('a', href=True):
@@ -51,7 +53,12 @@ def parse_links(url, url_start):
                 continue
             #we want to stay in the daily cal domain. This becomes more relevant later
             if domain(tmp).endswith('dailycal.org'):
-                url_list.append(tmp)
+                checkBad=False
+                for bad in bad_urls:
+                    if tmp.endswith(bad):
+                        checkBad=True
+                if not checkBad:
+                    url_list.append(tmp)
         if len(url_list) == 0:
             return [url_start]
         return url_list
