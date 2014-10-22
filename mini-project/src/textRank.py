@@ -96,5 +96,5 @@ def extractKeyphrases(text):
         i +=1
         j +=1
         
-    return modifiedKeyphrases
+    return sorted(list(modifiedKeyphrases),key=lambda item: item[1], reverse=True)
 
