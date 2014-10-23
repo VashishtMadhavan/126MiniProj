@@ -1,5 +1,3 @@
-###CODE courtesy of https://github.com/davidadamojr/TextRank
-## a few modifications were made for our purposes
 
 import nltk
 import itertools

@@ -9,11 +9,17 @@ from bs4 import BeautifulSoup
 from textRank import extractKeyphrases
 import operator
 
+""" stopwords.txt courtesy of https://github.com/crodas/TextRank/blob/master/lib/TextRank/Stopword/english-stopwords.txt
+textRank.py is methods also taken from https://github.com/davidadamojr/TextRank
+with some modifications for our purposes"""
+
+
 #constant variables
 #set of non-alphanumeric characters
 #run .strip(delchars) to get rid of all the unknown characters in an article
+
 delchars = ''.join(c for c in map(chr, range(256)) if not c.isalnum())
-#stop words in english read from stopwords.txt
+
 f=open('stopwords.txt','r')
 stop_words=[line.strip(delchars) for line in f]
 f.close()
@@ -146,8 +152,9 @@ def simulate(url_start,num_iterations,domain_name):
             else:
                 words_ranks[word]+=weight/num_iterations
 
-    for x in words_ranks.keys():
-        print "Word: " + x + " " + "Score: " + str(words_ranks[x])
+    word_ranks=sorted(words_ranks.items(), key=lambda item: item[1], reverse=True)
+    for x in words_ranks:
+        print "Word: " + x[0] + " " + "Score: " + str(x[1])
 
 
 
