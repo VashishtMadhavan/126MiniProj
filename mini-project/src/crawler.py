@@ -153,7 +153,7 @@ def simulate(url_start,num_iterations,domain_name):
                 words_ranks[word]+=weight/num_iterations
 
     word_ranks=sorted(words_ranks.items(), key=lambda item: item[1], reverse=True)
-    for x in words_ranks:
+    for x in word_ranks[:50]:
         print "Word: " + x[0] + " " + "Score: " + str(x[1])
 
 
